@@ -1,5 +1,13 @@
+#!/usr/bin/env php
 <?php
+
+if (php_sapi_name() != 'cli') {
+    die('Commandline mode only accepted'."\n");
+}
+
 require_once ('vendor/simplehtmldom/simple_html_dom.php');
+
+set_time_limit(0);
 
 $time = -microtime(true);
 
@@ -15,20 +23,27 @@ if ($container) {
 
     $categoryLinks = array();
     foreach ($links as $link) {
-        $categoryLinks[] = $link->attr['href'];
+        $categoryLinks[] =  array(
+            'link' => $link->attr['href'],
+            'name' => $link->find('h2', 0)->innertext
+        );
+
     }
 
 //    var_dump($categoryLinks);
     $goodLinks = array();
     foreach ($categoryLinks as $categoryLink) {
-        $html = file_get_html($baseUrl.$categoryLink);
+        $html = file_get_html($baseUrl.$categoryLink['link']);
 
         $goodContainers = $html->find('div[class=item_column]');
         foreach ($goodContainers as $cont) {
             $links = $cont->find('a[href]');
             foreach ($links as $link) {
                 if ($link->attr['href'] && strpos($link->attr['href'], 'NODE') === false) {
-                    $goodLinks[] = $link->attr['href'];
+                    $goodLinks[] = array(
+                        'link' => $link->attr['href'],
+                        'category' => $categoryLink,
+                    );
                 }
             }
         }
@@ -41,7 +56,7 @@ if ($container) {
         //    $link = 'http://www.omoikiri.ru/catalog/purifier/pure-drop-214';
         //    $link = 'http://www.omoikiri.ru/catalog/washer/akisame-78';
 
-        $html = file_get_html($baseUrl.$link);
+        $html = file_get_html($baseUrl.$link['link']);
 
         $div = $html->find('div[class=content]', 0);
         $js = $div->find('script', 0);
@@ -74,6 +89,7 @@ if ($container) {
             'images' => $images,
             'colors' => $colorJson,
             'schema' => null,
+            'category' => $link['category'],
         );
 
 
@@ -105,8 +121,8 @@ if ($container) {
 
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $rawImageUrl);
-                curl_setopt($ch, CURLOPT_VERBOSE, 1);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_VERBOSE, false);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_AUTOREFERER, false);
                 curl_setopt($ch, CURLOPT_REFERER, $baseUrl);
                 curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
@@ -132,8 +148,8 @@ if ($container) {
 
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $rawImageUrl);
-                curl_setopt($ch, CURLOPT_VERBOSE, 1);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_VERBOSE, false);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_AUTOREFERER, false);
                 curl_setopt($ch, CURLOPT_REFERER, $baseUrl);
                 curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
@@ -156,8 +172,8 @@ if ($container) {
             if (!file_exists($path . '/' . $stuff['schema'])) {
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $rawImageUrl);
-                curl_setopt($ch, CURLOPT_VERBOSE, 1);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_VERBOSE, false);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_AUTOREFERER, false);
                 curl_setopt($ch, CURLOPT_REFERER, $baseUrl);
                 curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
