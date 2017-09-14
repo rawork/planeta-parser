@@ -119,7 +119,10 @@ if ($container) {
         }
 
         // TODO clear colors from description
-        $stuff['descriptions'][] = $html->find('div[class=prodTable]', 0)->innertext;
+        $description = $html->find('div[class=prodTable]', 0)->innertext;
+        $descriptionHTML = str_get_html($description);
+        $descriptionHTML->find('div[class=colorSelector]', 0)->outertext = '';
+        $stuff['descriptions'][] = $descriptionHTML->outertext;
         $htmlControl = $html->find('div[class=productControl]', 0);
         if ($htmlControl) {
             $stuff['descriptions'][] =  $htmlControl->innertext;

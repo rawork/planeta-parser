@@ -55,9 +55,17 @@ foreach($sites as $site) {
 
         // Find $elementId
         $arSelect = Array("ID", "IBLOCK_ID", "NAME", "DATE_ACTIVE_FROM","PROPERTY_ARTNUMBER", "PROPERTY_addon_photo", "PROPERTY_color_image", "PROPERTY_article_price");
+
+        $articulFilter = array(
+            "LOGIC" => "OR"
+        );
+        $articulFilter[] = array("PROPERTY_ARTNUMBER" => $stuffArticul);
+        $articulFilter[] = array("NAME" => $stuffData['brand'] . ' ' .$stuffData['name']);
+
         $arFilter = Array(
             "IBLOCK_ID" => CATALOG_IBLOCK_ID,
-            "PROPERTY_ARTNUMBER" => $stuffArticul,
+            //"PROPERTY_ARTNUMBER" => $stuffArticul,
+            $articulFilter,
         );
         $res = CIBlockElement::GetList(Array(), $arFilter, false, Array("nPageSize"=>5), $arSelect);
 
@@ -71,7 +79,7 @@ foreach($sites as $site) {
             // PROPERTY_color_image
             // PROPERTY_article_price
         } else {
-            console("Element $articul not found");
+            console('New element '.$articul.' - "' . $stuffData['brand'] . ' ' .$stuffData['name'] . '""');
             continue;
 
             // todo добавить товар в каталог
@@ -101,10 +109,12 @@ foreach($sites as $site) {
                 "IBLOCK_ID"      => CATALOG_IBLOCK_ID,
                 "PROPERTY_VALUES"=> $PROP,
                 "NAME"           => $stuffData['brand'] . ' ' .$stuffData['name'],
-                "CODE"           => $stuffData['name'],
+                "CODE"           => $stuffData['brand'] . ' ' .$stuffData['name'],
                 "ACTIVE"         => "Y",            // активен
                 "PREVIEW_TEXT"   => "",
-                "DETAIL_TEXT"    => implode('<br><br>', $stuffData['descriptions'])
+                "DETAIL_TEXT"    => implode('<br><br>', $stuffData['descriptions']),
+                "DETAIL_TEXT_TYPE" => 'html',
+                "DETAIL_PICTURE" => CFile::MakeFileArray($basePath . $stuffData['colors'][0]['img']),
             );
 
             if($PRODUCT_ID = $el->Add($arLoadProductArray)) {
@@ -126,17 +136,19 @@ foreach($sites as $site) {
                 $arArticles = array();
                 foreach ($stuffData['colors'] as $color) {
 
-                    $fileData = CFile::MakeFileArray($basePath . $color['original']);
+                    $fileData = CFile::MakeFileArray($basePath . $color['img']);
 
                     $arFile[] = array("VALUE" => $fileData, "DESCRIPTION"=> $color['name']);
 
-                    $articlePrice = array($color['art'], $arFile['name'], $color['art']);
+                    $articlePrice = array($color['art'], $fileData['name'], $color['art']);
 
                     $arArticles[] = array("VALUE"=> implode(' | ', $articlePrice),"DESCRIPTION"=>"");
 
                 }
                 CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'color_image', $arFile);
                 CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'article_price', $arArticles );
+
+                console('Imported - OK');
             } else {
                 console("Error: ".$el->LAST_ERROR);
             }
