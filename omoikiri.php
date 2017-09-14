@@ -2,10 +2,14 @@
 <?php
 
 if (php_sapi_name() != 'cli') {
-    die('Commandline mode only accepted'."\n");
+    die('Commandline mode only accepted'. "\033[0m" ."\n");
 }
 
 require_once ('vendor/simplehtmldom/simple_html_dom.php');
+require_once ('src/helper.php');
+require_once ('src/Colors.php');
+
+$colors = new Colors();
 
 set_time_limit(0);
 
@@ -15,6 +19,10 @@ $baseUrl = 'http://www.omoikiri.ru';
 $baseStuffName = 'Omoikiri';
 
 $html = file_get_html($baseUrl.'/catalog');
+
+
+console($colors->getColoredString('parse catalog page ', "light_red"));
+
 
 $container = $html->find('div[class=cat_grid]', 0);
 
@@ -32,6 +40,9 @@ if ($container) {
 
 //    var_dump($categoryLinks);
     $goodLinks = array();
+
+    console($colors->getColoredString('parse category pages ', "light_red"));
+
     foreach ($categoryLinks as $categoryLink) {
         $html = file_get_html($baseUrl.$categoryLink['link']);
 
@@ -50,6 +61,9 @@ if ($container) {
     }
 
     //    var_dump(count($goodLinks));
+
+    $listPath = __DIR__ . '/content/' . strtolower($baseStuffName) . '/' . 'list.json';
+    $stuffList = array();
 
     foreach ($goodLinks as $link) {
         //    $link = 'http://www.omoikiri.ru/catalog/dispenser/om-01';
@@ -81,12 +95,18 @@ if ($container) {
             }
         }
 
+        $articul = trim($html->find('div[class=prodArticle]', 0)->find('span', 0)->innertext);
+
+        $stuffList[] = $articul;
+
+        console($colors->getColoredString('start parsing '. $articul, "yellow"));
 
         $stuff = array(
-            'name' => strip_tags($html->find('h1', 0)->innertext),
-            'articul' => $html->find('div[class=prodArticle]', 0)->find('span', 0)->innertext,
+            'name' => trim(strip_tags($html->find('h1', 0)->innertext)),
+            'articul' => $articul,
             'descriptions' => array(),
             'images' => $images,
+            'brand' => $baseStuffName,
             'colors' => $colorJson,
             'schema' => null,
             'category' => $link['category'],
@@ -105,7 +125,7 @@ if ($container) {
             $stuff['descriptions'][] =  $htmlControl->innertext;
         }
 
-        $path = __DIR__ . '/content/' . $baseStuffName . '/' . $stuff['articul'];
+        $path = __DIR__ . '/content/' . strtolower($baseStuffName) . '/' . $stuff['articul'];
 
         @mkdir($path, 0777, true);
 
@@ -187,11 +207,13 @@ if ($container) {
 
         file_put_contents($path.'/stuff.json', json_encode($stuff));
 
-//        var_dump($stuff['articul']);
+        console($colors->getColoredString('parsed '. $articul, "green"));
     }
+
+    file_put_contents($listPath, json_encode($stuffList));
 }
 
-echo 'ready';
+console('ready');
 
 $time = +microtime(true);
 
