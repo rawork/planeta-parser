@@ -77,17 +77,13 @@ foreach($sites as $site) {
             // todo обновить ДопИзображение, Цвет-Изображение, Артикул|Цена|Цвет(Ссылка на картинку)
             // PROPERTY_color_image
             // PROPERTY_article_price
-
-
             $arLoadProductArray = Array(
                 "MODIFIED_BY"    => 1,
                 "DETAIL_TEXT"    => implode('<br><br>', $stuffData['descriptions']),
                 "DETAIL_TEXT_TYPE" => 'html',
             );
 
-            $PRODUCT_ID = 2;  // изменяем элемент с кодом (ID) 2
             $res = $el->Update($PRODUCT_ID, $arLoadProductArray);
-
 
             $PROP['color_image'] = array('VALUE' => false);
             $elUpdate = CIBlockElement::SetPropertyValuesEx($PRODUCT_ID, CATALOG_IBLOCK_ID, $PROP);
