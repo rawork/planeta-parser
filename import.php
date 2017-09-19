@@ -32,6 +32,7 @@ CModule::IncludeModule('iblock');
 CModule::IncludeModule('file');
 
 foreach($sites as $site) {
+    console('Start import '.$site);
     $stuffList = json_decode(file_get_contents(__DIR__ . '/content/' . $site . '/' . 'list.json'), true);
 
     foreach($stuffList as $stuffArticul) {
@@ -165,7 +166,11 @@ foreach($sites as $site) {
             }
         }
     }
+    console('Finish import '.$site);
 }
+
+console('Ready');
+
 
 
 
