@@ -7,7 +7,7 @@ if (php_sapi_name() != 'cli') {
 
 set_time_limit(0);
 
-$siteFolder = __DIR__ . '/../..';
+$siteFolder = __DIR__ . '/..';
 
 $_SERVER["DOCUMENT_ROOT"] = $siteFolder;
 $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
@@ -31,16 +31,6 @@ require_once ('src/helper.php');
 CModule::IncludeModule('iblock');
 CModule::IncludeModule('file');
 
-
-$test = "4993335 | /var/www/planethab/data/www/planethab.webaltsite.ru/parser/tmp_files/4993335mi.png | 4993335";
-
-//$res = getSummColors($test);
-//$res2 = getArticleColors($test);
-//
-//var_dump($res, $res2);
-//die;
-
-
 foreach($sites as $site) {
     $stuffList = json_decode(file_get_contents(__DIR__ . '/content/' . $site . '/' . 'list.json'), true);
 
@@ -48,10 +38,6 @@ foreach($sites as $site) {
         $basePath = __DIR__ . '/content/' . $site . '/' . $stuffArticul . '/';
 
         $stuffData = json_decode(file_get_contents($basePath . 'stuff.json'), true);
-
-        var_dump($stuffData);
-
-        die;
 
         // Find $elementId
         $arSelect = Array("ID", "IBLOCK_ID", "NAME", "DATE_ACTIVE_FROM","PROPERTY_ARTNUMBER", "PROPERTY_addon_photo", "PROPERTY_color_image", "PROPERTY_article_price");
@@ -112,11 +98,9 @@ foreach($sites as $site) {
             // articul => PROPERTY_ARTNUMBER [107]
             // producer => PROPERTY_MANUFACTURER (text) [108]
             // PROPERTY_MANUFACTURER_CATALOG [120]
-
             // PROPERTY_addon_photo [137]
             // PROPERTY_color_image [138]
             // PROPERTY_additional_text [140]
-
             // PROPERTY_article_price [142]
 
             $el = new CIBlockElement;
