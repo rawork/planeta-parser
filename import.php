@@ -57,6 +57,9 @@ foreach($sites as $site) {
 
         if ($ob = $res->GetNextElement()) {
             $arFields = $ob->GetFields();
+
+            $el = new CIBlockElement;
+
             $PRODUCT_ID = $arFields['ID'];
             console("Product $articul found: " . $stuffData['brand'] . ' ' .$stuffData['name']);
 
