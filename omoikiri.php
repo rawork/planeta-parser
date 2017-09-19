@@ -123,9 +123,13 @@ if ($container) {
         $descriptionHTML = str_get_html($description);
         $descriptionHTML->find('div[class=colorSelector]', 0)->outertext = '';
         $stuff['descriptions'][] = $descriptionHTML->outertext;
-        $htmlControl = $html->find('div[class=productControl]', 0);
-        if ($htmlControl) {
-            $stuff['descriptions'][] =  $htmlControl->innertext;
+
+        $htmlControl = $descriptionHTML->find('div[class=productControl]', 0);
+        if (!$htmlControl) {
+            $htmlControl = $html->find('div[class=productControl]', 0);
+            if ($htmlControl) {
+                $stuff['descriptions'][] =  $htmlControl->innertext;
+            }
         }
 
         $path = __DIR__ . '/content/' . strtolower($baseStuffName) . '/' . $stuff['articul'];

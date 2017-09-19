@@ -71,16 +71,44 @@ foreach($sites as $site) {
 
         if ($ob = $res->GetNextElement()) {
             $arFields = $ob->GetFields();
-            console("Element $articul found");
-            continue;
+            $PRODUCT_ID = $arFields['ID'];
+            console("Product $articul found: " . $stuffData['brand'] . ' ' .$stuffData['name']);
 
             // todo обновить ДопИзображение, Цвет-Изображение, Артикул|Цена|Цвет(Ссылка на картинку)
-            // PROPERTY_addon_photo
             // PROPERTY_color_image
             // PROPERTY_article_price
+
+
+            $arLoadProductArray = Array(
+                "MODIFIED_BY"    => 1,
+                "DETAIL_TEXT"    => implode('<br><br>', $stuffData['descriptions']),
+                "DETAIL_TEXT_TYPE" => 'html',
+            );
+
+            $PRODUCT_ID = 2;  // изменяем элемент с кодом (ID) 2
+            $res = $el->Update($PRODUCT_ID, $arLoadProductArray);
+
+
+            $PROP['color_image'] = array('VALUE' => false);
+            $elUpdate = CIBlockElement::SetPropertyValuesEx($PRODUCT_ID, CATALOG_IBLOCK_ID, $PROP);
+
+            $arFile = array();
+            $arArticles = array();
+
+
+            foreach ($stuffData['colors'] as $color) {
+                $fileData = CFile::MakeFileArray($basePath . $color['img']);
+                $arFile[] = array("VALUE" => $fileData, "DESCRIPTION"=> $color['name']);
+                $articlePrice = array($color['art'], $fileData['name'], $color['art']);
+                $arArticles[] = array("VALUE"=> implode(' | ', $articlePrice),"DESCRIPTION"=>"");
+            }
+            CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'color_image', $arFile);
+            CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'article_price', $arArticles );
+
+            console('Update - OK');
         } else {
-            console('New element '.$articul.' - "' . $stuffData['brand'] . ' ' .$stuffData['name'] . '""');
-            continue;
+            console('New Product '.$articul.' - "' . $stuffData['brand'] . ' ' .$stuffData['name'] . '""');
+
 
             // todo добавить товар в каталог
             // description => DETAIL_TEXT
@@ -148,9 +176,9 @@ foreach($sites as $site) {
                 CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'color_image', $arFile);
                 CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'article_price', $arArticles );
 
-                console('Imported - OK');
+                console('Import - OK');
             } else {
-                console("Error: ".$el->LAST_ERROR);
+                console("Import - Error: ".$el->LAST_ERROR);
             }
         }
     }
