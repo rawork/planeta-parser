@@ -139,6 +139,10 @@ foreach($sites as $site) {
                 "DETAIL_PICTURE" => CFile::MakeFileArray($basePath . $stuffData['colors'][0]['img']),
             );
 
+            if (isset($stuffData['section_id'])) {
+                $arLoadProductArray['IBLOCK_SECTION_ID'] = $stuffData['section_id'];
+            }
+
             if($PRODUCT_ID = $el->Add($arLoadProductArray)) {
                 console("New Product ID: ".$PRODUCT_ID);
 

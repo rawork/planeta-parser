@@ -93,6 +93,7 @@ foreach ($goodLinks as $key => $link) {
         'category' => null,
         'extra' => array(),
         'docs' => $docs,
+        'section_id' => 108,
     );
 
     $stuff['descriptions'][] = $html->find('div[class=portfolio-detail-title]', 0)->find('h4', 0)->outertext;
