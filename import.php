@@ -19,12 +19,12 @@ define('CATALOG_IBLOCK_ID', 22);
 
 $sites = array(
     'omoikiri',
-    'faberspa',
+    'faber',
 );
 
 $brands = array(
     'Omoikiri' => array('id' => 386, 'name' => 'Omoikiri'),
-    'Faberspa' => array('id' => 380, 'name' => 'FABER'),
+    'FABER' => array('id' => 380, 'name' => 'FABER'),
 );
 
 require($_SERVER["DOCUMENT_ROOT"]. "/bitrix/modules/main/include/prolog_before.php");

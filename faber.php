@@ -16,9 +16,9 @@ set_time_limit(0);
 $time = -microtime(true);
 
 $baseUrl = 'http://www.faberspa.com/ru/vytyazhki/';
-$baseStuffName = 'Faberspa';
+$baseStuffName = 'FABER';
 
-$html = file_get_html('faberspa.html');
+$html = file_get_html('faber.html');
 
 console($colors->getColoredString('Parse catalog page', "light_green"));
 

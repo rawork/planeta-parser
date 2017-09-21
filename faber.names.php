@@ -39,8 +39,7 @@ foreach($brands as $brandName => $brandData) {
         "IBLOCK_ID" => CATALOG_IBLOCK_ID,
         "NAME" => $brandName . '%',
     );
-    $res = CIBlockElement::GetList(Array(), $arFilter, false, Array("nPageSize"=>1000), $arSelect);
-
+    $res = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
 
     while ($ob = $res->GetNextElement()) {
         $arFields = $ob->GetFields();
@@ -56,10 +55,13 @@ foreach($brands as $brandName => $brandData) {
             "CODE"           => Cutil::translit($newName, "ru", $arTranslitParams),
         );
 
-        $res = $el->Update($PRODUCT_ID, $arLoadProductArray);
+        $res2 = $el->Update($PRODUCT_ID, $arLoadProductArray);
 
         console('Update - OK');
     }
+
+    CIBlock::clearIblockTagCache(CATALOG_IBLOCK_ID);
+
     console('Finish correction '.$brandName);
 }
 
