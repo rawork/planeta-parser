@@ -18,11 +18,13 @@ define("LANG", "s1");
 define('CATALOG_IBLOCK_ID', 22);
 
 $sites = array(
-    'omoikiri'
+    'omoikiri',
+    'faberspa',
 );
 
 $brands = array(
-    'Omoikiri' => 386
+    'Omoikiri' => array('id' => 386, 'name' => 'Omoikiri'),
+    'Faberspa' => array('id' => 380, 'name' => 'FABER'),
 );
 
 require($_SERVER["DOCUMENT_ROOT"]. "/bitrix/modules/main/include/prolog_before.php");
@@ -56,6 +58,7 @@ foreach($sites as $site) {
         );
         $res = CIBlockElement::GetList(Array(), $arFilter, false, Array("nPageSize"=>5), $arSelect);
 
+        $arTranslitParams = array("replace_space"=>"-","replace_other"=>"-");
         if ($ob = $res->GetNextElement()) {
             $arFields = $ob->GetFields();
 
@@ -69,34 +72,37 @@ foreach($sites as $site) {
             // PROPERTY_article_price
             $arLoadProductArray = Array(
                 "MODIFIED_BY"    => 1,
+                "CODE"           => Cutil::translit($stuffData['brand'] . ' ' .$stuffData['name'], "ru", $arTranslitParams),
                 "DETAIL_TEXT"    => implode('<br><br>', $stuffData['descriptions']),
                 "DETAIL_TEXT_TYPE" => 'html',
             );
 
             $res = $el->Update($PRODUCT_ID, $arLoadProductArray);
 
-            $PROP['color_image'] = array('VALUE' => false);
-            $elUpdate = CIBlockElement::SetPropertyValuesEx($PRODUCT_ID, CATALOG_IBLOCK_ID, $PROP);
+            if ($stuffData['colors']) {
+                $PROP['color_image'] = array('VALUE' => false);
+                $elUpdate = CIBlockElement::SetPropertyValuesEx($PRODUCT_ID, CATALOG_IBLOCK_ID, $PROP);
 
-            $arFile = array();
-            $arArticles = array();
+                $arFile = array();
+                $arArticles = array();
 
 
-            foreach ($stuffData['colors'] as $color) {
-                $fileData = CFile::MakeFileArray($basePath . $color['img']);
-                $arFile[] = array("VALUE" => $fileData, "DESCRIPTION"=> $color['name']);
-                $articlePrice = array($color['art'], $fileData['name'], $color['art']);
-                $arArticles[] = array("VALUE"=> implode(' | ', $articlePrice),"DESCRIPTION"=>"");
+                foreach ($stuffData['colors'] as $color) {
+                    $fileData = CFile::MakeFileArray($basePath . $color['img']);
+                    $arFile[] = array("VALUE" => $fileData, "DESCRIPTION"=> $color['name']);
+                    $articlePrice = array($color['art'], $fileData['name'], $color['art']);
+                    $arArticles[] = array("VALUE"=> implode(' | ', $articlePrice),"DESCRIPTION"=>"");
+                }
+                CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'color_image', $arFile);
+                CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'article_price', $arArticles );
             }
-            CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'color_image', $arFile);
-            CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'article_price', $arArticles );
 
             console('Update - OK');
         } else {
             console('New Product '.$articul.' - "' . $stuffData['brand'] . ' ' .$stuffData['name'] . '""');
 
+            // Добавляем товар в каталог
 
-            // todo добавить товар в каталог
             // description => DETAIL_TEXT
             // name => NAME & CODE
             // articul => PROPERTY_ARTNUMBER [107]
@@ -106,6 +112,7 @@ foreach($sites as $site) {
             // PROPERTY_color_image [138]
             // PROPERTY_additional_text [140]
             // PROPERTY_article_price [142]
+            // PROPERTY_doc_file [139]
 
             $el = new CIBlockElement;
 
@@ -113,7 +120,10 @@ foreach($sites as $site) {
 
             $PROP[107] = $stuffData['articul'];
             $PROP[108] = $stuffData['brand'];
-            $PROP[120] = $brands[$stuffData['brand']];
+            $PROP[120] = $brands[$stuffData['brand']]['id'];
+            if (isset($stuffData['extra']) && is_array($stuffData['extra'])){
+                $PROP[140] = array("VALUE" => array("TYPE" =>"HTML","TEXT" => implode('<br>', $stuffData['extra'])));
+            }
 
             $arLoadProductArray = Array(
                 "MODIFIED_BY"    => 1, // элемент изменен текущим пользователем
@@ -121,7 +131,7 @@ foreach($sites as $site) {
                 "IBLOCK_ID"      => CATALOG_IBLOCK_ID,
                 "PROPERTY_VALUES"=> $PROP,
                 "NAME"           => $stuffData['brand'] . ' ' .$stuffData['name'],
-                "CODE"           => $stuffData['brand'] . ' ' .$stuffData['name'],
+                "CODE"           => Cutil::translit($stuffData['brand'] . ' ' .$stuffData['name'], "ru", $arTranslitParams),
                 "ACTIVE"         => "Y",            // активен
                 "PREVIEW_TEXT"   => "",
                 "DETAIL_TEXT"    => implode('<br><br>', $stuffData['descriptions']),
@@ -142,23 +152,36 @@ foreach($sites as $site) {
                 }
                 CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'addon_photo', $arFile);
 
+                // добавляем Файл документации
+                if (isset($stuffData['docs']) && $stuffData['docs']) {
+                    $arFile = array();
+                    foreach ($stuffData['docs'] as $doc) {
+                        $arFile[] = array(
+                            "VALUE" => CFile::MakeFileArray($basePath . $doc), "DESCRIPTION" => "");
+                    }
+
+                    CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'doc_file', $arFile);
+                }
+
                 // добавляем Цвет - Изображение
                 // добавляем Артикул | Цена | Цвет (ссылка)
-                $arFile = array();
-                $arArticles = array();
-                foreach ($stuffData['colors'] as $color) {
+                if ($stuffData['colors']) {
+                    $arFile = array();
+                    $arArticles = array();
+                    foreach ($stuffData['colors'] as $color) {
 
-                    $fileData = CFile::MakeFileArray($basePath . $color['img']);
+                        $fileData = CFile::MakeFileArray($basePath . $color['img']);
 
-                    $arFile[] = array("VALUE" => $fileData, "DESCRIPTION"=> $color['name']);
+                        $arFile[] = array("VALUE" => $fileData, "DESCRIPTION"=> $color['name']);
 
-                    $articlePrice = array($color['art'], $fileData['name'], $color['art']);
+                        $articlePrice = array($color['art'], $fileData['name'], $color['art']);
 
-                    $arArticles[] = array("VALUE"=> implode(' | ', $articlePrice),"DESCRIPTION"=>"");
+                        $arArticles[] = array("VALUE"=> implode(' | ', $articlePrice),"DESCRIPTION"=>"");
 
+                    }
+                    CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'color_image', $arFile);
+                    CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'article_price', $arArticles );
                 }
-                CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'color_image', $arFile);
-                CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'article_price', $arArticles );
 
                 console('Import - OK');
             } else {
