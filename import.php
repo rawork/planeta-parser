@@ -80,7 +80,7 @@ foreach($sites as $site) {
             if (count($stuffData['colors']) > 0) {
                 $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['colors'][0]['img']);
             } elseif (count($stuffData['images']) > 0) {
-                $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['images'][0]['img']);
+                $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['images'][0]['original']);
             }
 
             $res = $el->Update($PRODUCT_ID, $arLoadProductArray);
