@@ -77,6 +77,12 @@ foreach($sites as $site) {
                 "DETAIL_TEXT_TYPE" => 'html',
             );
 
+            if (count($stuffData['colors']) > 0) {
+                $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['colors'][0]['img']);
+            } elseif (count($stuffData['images']) > 0) {
+                $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['images'][0]['img']);
+            }
+
             $res = $el->Update($PRODUCT_ID, $arLoadProductArray);
 
             // Обновляем additional_text
@@ -156,8 +162,13 @@ foreach($sites as $site) {
                 "PREVIEW_TEXT"   => "",
                 "DETAIL_TEXT"    => implode('<br><br>', $stuffData['descriptions']),
                 "DETAIL_TEXT_TYPE" => 'html',
-                "DETAIL_PICTURE" => CFile::MakeFileArray($basePath . $stuffData['colors'][0]['img']),
             );
+
+            if (count($stuffData['colors']) > 0) {
+                $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['colors'][0]['img']);
+            } elseif (count($stuffData['images']) > 0) {
+                $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['images'][0]['img']);
+            }
 
             if (isset($stuffData['section_id'])) {
                 $arLoadProductArray['IBLOCK_SECTION_ID'] = $stuffData['section_id'];
