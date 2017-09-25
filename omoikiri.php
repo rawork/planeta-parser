@@ -38,7 +38,6 @@ if ($container) {
 
     }
 
-//    var_dump($categoryLinks);
     $goodLinks = array();
 
     console($colors->getColoredString('parse category pages ', "light_red"));
@@ -60,12 +59,10 @@ if ($container) {
         }
     }
 
-    //    var_dump(count($goodLinks));
-
     $listPath = __DIR__ . '/content/' . strtolower($baseStuffName) . '/' . 'list.json';
     $stuffList = array();
 
-    foreach ($goodLinks as $link) {
+    foreach ($goodLinks as $key => $link) {
         //    $link = 'http://www.omoikiri.ru/catalog/dispenser/om-01';
         //    $link = 'http://www.omoikiri.ru/catalog/purifier/pure-drop-214';
         //    $link = 'http://www.omoikiri.ru/catalog/washer/akisame-78';
@@ -80,8 +77,6 @@ if ($container) {
         $textJS = substr($textJS, 0, strpos($textJS, '}];')+2);
         $textJS = str_replace('null', '""', $textJS);
         $colorJson = json_decode($textJS, true);
-        //var_dump($colorJson);
-
 
         $images = array();
         $htmlImagesContainer = $html->find('div[class=field-name-field-extra-imgs]', 0);
@@ -95,11 +90,19 @@ if ($container) {
             }
         }
 
+        $htmlImagesContainer = $html->find('div[class=prodFirstImage]', 0);
+        if ($htmlImagesContainer) {
+            $images[] = array(
+                'thumb' => $htmlImagesContainer->find('img', 0)->attr['src'],
+                'original' => $htmlImagesContainer->find('img', 0)->attr['src']
+            );
+        }
+
         $articul = trim($html->find('div[class=prodArticle]', 0)->find('span', 0)->innertext);
 
         $stuffList[] = $articul;
 
-        console($colors->getColoredString('start parsing '. $articul, "yellow"));
+        console($colors->getColoredString('['.($key+1).'] Start parse '. $articul, "yellow"));
 
         $stuff = array(
             'name' => trim(strip_tags($html->find('h1', 0)->innertext)),
