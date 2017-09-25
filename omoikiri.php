@@ -88,14 +88,14 @@ if ($container) {
                     'original' => $htmlImage->attr['href']
                 );
             }
-        }
-
-        $htmlImagesContainer = $html->find('div[class=prodFirstImage]', 0);
-        if ($htmlImagesContainer) {
-            $images[] = array(
-                'thumb' => $htmlImagesContainer->find('img', 0)->attr['src'],
-                'original' => $htmlImagesContainer->find('img', 0)->attr['src']
-            );
+        } else {
+            $htmlImagesContainer = $html->find('div[class=prodFirstImage]', 0);
+            if ($htmlImagesContainer) {
+                $images[] = array(
+                    'thumb' => $htmlImagesContainer->find('img', 0)->attr['src'],
+                    'original' => $htmlImagesContainer->find('img', 0)->attr['src']
+                );
+            }
         }
 
         $articul = trim($html->find('div[class=prodArticle]', 0)->find('span', 0)->innertext);
