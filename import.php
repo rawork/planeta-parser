@@ -27,7 +27,6 @@ $brands = array(
     'Omoikiri' => array('id' => 386, 'name' => 'Omoikiri'),
     'FABER' => array('id' => 380, 'name' => 'FABER'),
     'Elica' => array('id' => 382, 'name' => 'Elica'),
-    'Mikadzo' => array('id' => 388, 'name' => ''),
 );
 
 require($_SERVER["DOCUMENT_ROOT"]. "/bitrix/modules/main/include/prolog_before.php");
@@ -70,9 +69,15 @@ foreach($sites as $site) {
             $PRODUCT_ID = $arFields['ID'];
             console("Product $articul found: " . $stuffData['brand'] . ' ' .$stuffData['name']);
 
+            $PROP = array();
+
+            $PROP[108] = $stuffData['brand'];
+            $PROP[120] = $brands[$stuffData['brand']]['id'];
+
             $arLoadProductArray = Array(
                 "MODIFIED_BY"    => 1,
                 "CODE"           => Cutil::translit($stuffData['brand'] . ' ' .$stuffData['name'], "ru", $arTranslitParams),
+                "PROPERTY_VALUES" => $PROP,
                 "DETAIL_TEXT"    => implode('<br><br>', $stuffData['descriptions']),
                 "DETAIL_TEXT_TYPE" => 'html',
             );
