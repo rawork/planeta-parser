@@ -20,11 +20,14 @@ define('CATALOG_IBLOCK_ID', 22);
 $sites = array(
     'omoikiri',
     'faber',
+    'elica',
 );
 
 $brands = array(
     'Omoikiri' => array('id' => 386, 'name' => 'Omoikiri'),
     'FABER' => array('id' => 380, 'name' => 'FABER'),
+    'Elica' => array('id' => 382, 'name' => 'Elica'),
+    'Mikadzo' => array('id' => 388, 'name' => ''),
 );
 
 require($_SERVER["DOCUMENT_ROOT"]. "/bitrix/modules/main/include/prolog_before.php");
@@ -67,9 +70,6 @@ foreach($sites as $site) {
             $PRODUCT_ID = $arFields['ID'];
             console("Product $articul found: " . $stuffData['brand'] . ' ' .$stuffData['name']);
 
-            // todo обновить ДопИзображение, Цвет-Изображение, Артикул|Цена|Цвет(Ссылка на картинку)
-            // PROPERTY_color_image
-            // PROPERTY_article_price
             $arLoadProductArray = Array(
                 "MODIFIED_BY"    => 1,
                 "CODE"           => Cutil::translit($stuffData['brand'] . ' ' .$stuffData['name'], "ru", $arTranslitParams),
@@ -79,13 +79,34 @@ foreach($sites as $site) {
 
             $res = $el->Update($PRODUCT_ID, $arLoadProductArray);
 
+            // Обновляем additional_text
+            if (isset($stuffData['extra']) && is_array($stuffData['extra'])){
+                CIBlockElement::SetPropertyValueCode(
+                    $PRODUCT_ID,
+                    'additional_text',
+                    array(array("TYPE"=>"HTML", "TEXT"=> implode('<br>', $stuffData['extra'])))
+                );
+            }
+
+            // Обновляем PROPERTY_addon_photo
+            if ($stuffData['images']) {
+                $PROP['addon_photo'] = array('VALUE' => false);
+                $elUpdate = CIBlockElement::SetPropertyValuesEx($PRODUCT_ID, CATALOG_IBLOCK_ID, $PROP);
+
+                $arFile = array();
+                foreach ($stuffData['images'] as $image) {
+                    $arFile[] = array("VALUE" => CFile::MakeFileArray($basePath . $image['original']), "DESCRIPTION"=>"");
+                }
+                CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'addon_photo', $arFile);
+            }
+
+            // Обновляем PROPERTY_color_image и PROPERTY_article_price
             if ($stuffData['colors']) {
                 $PROP['color_image'] = array('VALUE' => false);
                 $elUpdate = CIBlockElement::SetPropertyValuesEx($PRODUCT_ID, CATALOG_IBLOCK_ID, $PROP);
 
                 $arFile = array();
                 $arArticles = array();
-
 
                 foreach ($stuffData['colors'] as $color) {
                     $fileData = CFile::MakeFileArray($basePath . $color['img']);
@@ -102,7 +123,6 @@ foreach($sites as $site) {
             console('New Product '.$articul.' - "' . $stuffData['brand'] . ' ' .$stuffData['name'] . '""');
 
             // Добавляем товар в каталог
-
             // description => DETAIL_TEXT
             // name => NAME & CODE
             // articul => PROPERTY_ARTNUMBER [107]
@@ -195,6 +215,8 @@ foreach($sites as $site) {
     }
     console('Finish import '.$site);
 }
+
+CIBlock::clearIblockTagCache(CATALOG_IBLOCK_ID);
 
 console('Ready');
 
