@@ -71,6 +71,7 @@ foreach($sites as $site) {
 
             $PROP = array();
 
+            $PROP[107] = $stuffArticul;
             $PROP[108] = $stuffData['brand'];
             $PROP[120] = $brands[$stuffData['brand']]['id'];
 
