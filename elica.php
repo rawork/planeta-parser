@@ -52,6 +52,7 @@ foreach ($goodLinks as $key => $link) {
         $articul = trim($articulContainerHtml->find('td[class=tab_mod_acc_3]', 1)->innertext);
     } else {
         console($colors->getColoredString('Articul not found "'. $baseUrl.$link['link'] . '"', "light_red"));
+        continue;
     }
 
     $stuffList[] = $articul;
