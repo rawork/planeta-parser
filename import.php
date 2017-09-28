@@ -132,7 +132,7 @@ foreach($sites as $site) {
 
             console('Update - OK');
         } else {
-            console('New Product '.$articul.' - "' . $stuffData['brand'] . ' ' .$stuffData['name'] . '""');
+            console('New Product "'.$articul.' - ' . $stuffData['brand'] . '" ' .$stuffData['name'] . '""');
 
             // Добавляем товар в каталог
             // description => DETAIL_TEXT
