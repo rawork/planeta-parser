@@ -21,7 +21,7 @@ $baseStuffName = 'Omoikiri';
 $html = file_get_html($baseUrl.'/catalog');
 
 
-console($colors->getColoredString('parse catalog page ', "light_red"));
+console($colors->getColoredString('Parse catalog page ', "yellow"));
 
 
 $container = $html->find('div[class=cat_grid]', 0);
@@ -40,21 +40,22 @@ if ($container) {
 
     $goodLinks = array();
 
-    console($colors->getColoredString('parse category pages ', "light_red"));
+    console($colors->getColoredString('Parse category pages ', "yellow"));
 
     foreach ($categoryLinks as $categoryLink) {
         $html = file_get_html($baseUrl.$categoryLink['link']);
 
-        $goodContainers = $html->find('div[class=item_column]');
+        $goodContainers = $html->find('div[class=item_column]'); //catalogItem
         foreach ($goodContainers as $cont) {
-            $links = $cont->find('a[href]');
-            foreach ($links as $link) {
-                if ($link->attr['href'] && strpos($link->attr['href'], 'NODE') === false) {
-                    $goodLinks[] = array(
-                        'link' => $link->attr['href'],
-                        'category' => $categoryLink,
-                    );
-                }
+            $link = $cont->find('a[href*=catalog]', 0);
+            $name = $cont->find('a[href*=NODE]', 0);
+
+            if ($link && $name) {
+                $goodLinks[] = array(
+                    'link' => $link->attr['href'],
+                    'name' => $name->innertext,
+                    'category' => $categoryLink,
+                );
             }
         }
     }
@@ -62,12 +63,20 @@ if ($container) {
     $listPath = __DIR__ . '/content/' . strtolower($baseStuffName) . '/' . 'list.json';
     $stuffList = array();
 
+    $stuffCount = count($goodLinks);
+
     foreach ($goodLinks as $key => $link) {
         //    $link = 'http://www.omoikiri.ru/catalog/dispenser/om-01';
         //    $link = 'http://www.omoikiri.ru/catalog/purifier/pure-drop-214';
         //    $link = 'http://www.omoikiri.ru/catalog/washer/akisame-78';
 
         $html = file_get_html($baseUrl.$link['link']);
+
+        $articul = trim($html->find('div[class=prodArticle]', 0)->find('span', 0)->innertext);
+
+        $stuffList[] = $articul;
+
+        console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$link['name'].' ['. $articul . ', category="'.$link['category']['name'].'"]', "yellow"));
 
         $div = $html->find('div[class=content]', 0);
         $js = $div->find('script', 0);
@@ -95,17 +104,25 @@ if ($container) {
                     'thumb' => $htmlImagesContainer->find('img', 0)->attr['src'],
                     'original' => $htmlImagesContainer->find('img', 0)->attr['src']
                 );
+            } else {
+                $htmlImagesContainer = $html->find('img[id=prodFirstImage]', 0);
+                if ($htmlImagesContainer) {
+                    $images[] = array(
+                        'thumb' => $htmlImagesContainer->attr['src'],
+                        'original' => $htmlImagesContainer->attr['src']
+                    );
+                }
             }
         }
 
-        $articul = trim($html->find('div[class=prodArticle]', 0)->find('span', 0)->innertext);
-
-        $stuffList[] = $articul;
-
-        console($colors->getColoredString('['.($key+1).'] Start parse '. $articul, "yellow"));
+        if (count($images) > 0) {
+            console($colors->getColoredString('Found '.count($images).' images', "light_green"));
+        } else {
+            console($colors->getColoredString('Images not found', "light_red"));
+        }
 
         $stuff = array(
-            'name' => trim(strip_tags($html->find('h1', 0)->innertext)),
+            'name' => $link['name'],
             'articul' => $articul,
             'descriptions' => array(),
             'images' => $images,
@@ -121,10 +138,13 @@ if ($container) {
             $stuff['schema'] = $htmlSchemaContainer->find('img', 0)->attr['src'];
         }
 
-        // TODO clear colors from description
+        // remove colors from description
         $description = $html->find('div[class=prodTable]', 0)->innertext;
         $descriptionHTML = str_get_html($description);
-        $descriptionHTML->find('div[class=colorSelector]', 0)->outertext = '';
+        $colorSelectorHtml = $descriptionHTML->find('div[class=colorSelector]', 0);
+        if ($colorSelectorHtml) {
+            $descriptionHTML->find('div[class=colorSelector]', 0)->outertext = '';
+        }
         $stuff['descriptions'][] = $descriptionHTML->outertext;
 
         $htmlControl = $descriptionHTML->find('div[class=productControl]', 0);
@@ -217,7 +237,7 @@ if ($container) {
 
         file_put_contents($path.'/stuff.json', json_encode($stuff));
 
-        console($colors->getColoredString('parsed '. $articul, "green"));
+        console($colors->getColoredString('Parsed '. $stuff['name'] .' '. $articul, "green"));
     }
 
     file_put_contents($listPath, json_encode($stuffList));
