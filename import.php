@@ -21,12 +21,14 @@ $sites = array(
     'omoikiri',
     'faber',
     'elica',
+    'mikadzo',
 );
 
 $brands = array(
     'Omoikiri' => array('id' => 386, 'name' => 'Omoikiri'),
     'FABER' => array('id' => 380, 'name' => 'FABER'),
     'Elica' => array('id' => 382, 'name' => 'Elica'),
+    'Mikadzo' => array('id' => 388, 'name' => 'Mikadzo'),
 );
 
 require($_SERVER["DOCUMENT_ROOT"]. "/bitrix/modules/main/include/prolog_before.php");
@@ -77,7 +79,7 @@ foreach($sites as $site) {
 
             $arLoadProductArray = Array(
                 "MODIFIED_BY"    => 1,
-                "CODE"           => Cutil::translit($stuffData['brand'] . ' ' .$stuffData['name'], "ru", $arTranslitParams),
+                "CODE"           => str2url($stuffData['brand'] . ' ' .$stuffData['name']), //Cutil::translit($stuffData['brand'] . ' ' .$stuffData['name'], "ru", $arTranslitParams),
                 "PROPERTY_VALUES" => $PROP,
                 "DETAIL_TEXT"    => implode('<br><br>', $stuffData['descriptions']),
                 "DETAIL_TEXT_TYPE" => 'html',
@@ -163,7 +165,7 @@ foreach($sites as $site) {
                 "IBLOCK_ID"      => CATALOG_IBLOCK_ID,
                 "PROPERTY_VALUES"=> $PROP,
                 "NAME"           => $stuffData['brand'] . ' ' .$stuffData['name'],
-                "CODE"           => Cutil::translit($stuffData['brand'] . ' ' .$stuffData['name'], "ru", $arTranslitParams),
+                "CODE"           => str2url($stuffData['brand'] . ' ' .$stuffData['name']), //Cutil::translit($stuffData['brand'] . ' ' .$stuffData['name'], "ru", $arTranslitParams),
                 "ACTIVE"         => "Y",            // активен
                 "PREVIEW_TEXT"   => "",
                 "DETAIL_TEXT"    => implode('<br><br>', $stuffData['descriptions']),
@@ -173,7 +175,7 @@ foreach($sites as $site) {
             if (count($stuffData['colors']) > 0) {
                 $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['colors'][0]['img']);
             } elseif (count($stuffData['images']) > 0) {
-                $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['images'][0]['img']);
+                $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['images'][0]['original']);
             }
 
             if (isset($stuffData['section_id'])) {
