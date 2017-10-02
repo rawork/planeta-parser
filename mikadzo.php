@@ -22,6 +22,10 @@ $html = file_get_html('http://mikadzo.ru/knifes/damascus-collection/damascus/');
 
 console($colors->getColoredString('Parse catalog page ', "yellow"));
 
+$articuls = array(
+    '234234234' => '4992011',
+);
+
 $container = $html->find('div[id=sublist]', 0);
 if ($container) {
     $links = $container->find('a');
@@ -74,6 +78,10 @@ if ($container) {
         if ($descriptionHtml) {
 
             $articul = str_replace('арт. ', '', trim($descriptionHtml->find('div[class=title]', 0)->find('p', 0)->innertext));
+
+            if (array_key_exists($articul, $articuls)) {
+                $articul = $articuls[$articul];
+            }
 
             $stuffList[] = $articul;
 
