@@ -125,7 +125,7 @@ foreach($sites as $site) {
                 foreach ($stuffData['colors'] as $color) {
                     $fileData = CFile::MakeFileArray($basePath . $color['img']);
                     $arFile[] = array("VALUE" => $fileData, "DESCRIPTION"=> $color['name']);
-                    $articlePrice = array($color['art'], $fileData['name'], $color['art']);
+                    $articlePrice = array($color['art'], $fileData['name'], '0');
                     $arArticles[] = array("VALUE"=> implode(' | ', $articlePrice),"DESCRIPTION"=>"");
                 }
                 CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'color_image', $arFile);
@@ -217,7 +217,7 @@ foreach($sites as $site) {
 
                         $arFile[] = array("VALUE" => $fileData, "DESCRIPTION"=> $color['name']);
 
-                        $articlePrice = array($color['art'], $fileData['name'], $color['art']);
+                        $articlePrice = array($color['art'], $fileData['name'], '0');
 
                         $arArticles[] = array("VALUE"=> implode(' | ', $articlePrice),"DESCRIPTION"=>"");
 
