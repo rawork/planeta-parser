@@ -172,7 +172,7 @@ if ($container) {
             if ($htmlDocsContainer) {
                 $htmlDoc = $htmlDocsContainer->find('a', 0);
                 if (strpos($htmlDoc->attr['href'], 'ajax') === false) {
-                    var_dump($htmlDoc->attr['href'], strpos($htmlDoc->attr['href'], 'ajax'));
+//                    var_dump($htmlDoc->attr['href'], strpos($htmlDoc->attr['href'], 'ajax'));
                     $docs[] = array(
                         'link' => $htmlDoc->attr['href'],
                         'description' => $htmlDoc->innertext,
@@ -184,7 +184,7 @@ if ($container) {
             if ($htmlDocsContainer) {
                 $htmlDoc = $htmlDocsContainer->find('a', 0);
                 if (strpos($htmlDoc->attr['href'], 'ajax') === false) {
-                    var_dump($htmlDoc->attr['href'], strpos($htmlDoc->attr['href'], 'ajax'));
+//                    var_dump($htmlDoc->attr['href'], strpos($htmlDoc->attr['href'], 'ajax'));
                     $docs[] = array(
                         'link' => $htmlDoc->attr['href'],
                         'description' => $htmlDoc->innertext,
