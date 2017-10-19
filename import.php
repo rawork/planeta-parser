@@ -22,6 +22,7 @@ $sites = array(
     'faber',
     'elica',
     'mikadzo',
+    'smeg',
 );
 
 $brands = array(
@@ -29,6 +30,7 @@ $brands = array(
     'FABER' => array('id' => 380, 'name' => 'FABER'),
     'Elica' => array('id' => 382, 'name' => 'Elica'),
     'Mikadzo' => array('id' => 388, 'name' => 'Mikadzo'),
+    'Smeg' => array('id' => 384, 'name' => 'Smeg'),
 );
 
 require($_SERVER["DOCUMENT_ROOT"]. "/bitrix/modules/main/include/prolog_before.php");
@@ -54,10 +56,10 @@ foreach($sites as $site) {
         );
         $articulFilter[] = array("PROPERTY_ARTNUMBER" => $stuffArticul);
         $articulFilter[] = array("NAME" => $stuffData['brand'] . ' ' .$stuffData['name']);
+        $articulFilter[] = array("NAME" => $stuffData['name']);
 
         $arFilter = Array(
             "IBLOCK_ID" => CATALOG_IBLOCK_ID,
-            //"PROPERTY_ARTNUMBER" => $stuffArticul,
             $articulFilter,
         );
         $res = CIBlockElement::GetList(Array(), $arFilter, false, Array("nPageSize"=>5), $arSelect);
@@ -77,9 +79,14 @@ foreach($sites as $site) {
             $PROP[108] = $stuffData['brand'];
             $PROP[120] = $brands[$stuffData['brand']]['id'];
 
+            /*
+             * todo Для кода товара, который используется в урл страницы товара нельзя использовать Cutil::translit,
+             * т.к. он работает некорректно с русскими буквами в UTF-8
+             * Cutil::translit($stuffData['brand'] . ' ' .$stuffData['name'], "ru", $arTranslitParams)
+             */
             $arLoadProductArray = Array(
                 "MODIFIED_BY"    => 1,
-                "CODE"           => str2url($stuffData['brand'] . ' ' .$stuffData['name']), //Cutil::translit($stuffData['brand'] . ' ' .$stuffData['name'], "ru", $arTranslitParams),
+                "CODE"           => str2url($stuffData['brand'] . ' ' .$stuffData['name']),
                 "PROPERTY_VALUES" => $PROP,
                 "DETAIL_TEXT"    => implode('<br><br>', $stuffData['descriptions']),
                 "DETAIL_TEXT_TYPE" => 'html',
@@ -89,6 +96,10 @@ foreach($sites as $site) {
                 $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['colors'][0]['img']);
             } elseif (count($stuffData['images']) > 0) {
                 $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['images'][0]['original']);
+            }
+
+            if (in_array($stuffData['brand'], array('smeg'))) {
+                $arLoadProductArray['NAME'] = $stuffData['brand'] . ' ' .$stuffData['name'];
             }
 
             $res = $el->Update($PRODUCT_ID, $arLoadProductArray);
