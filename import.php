@@ -71,7 +71,7 @@ foreach($sites as $site) {
             $el = new CIBlockElement;
 
             $PRODUCT_ID = $arFields['ID'];
-            console("Product $articul found: " . $stuffData['brand'] . ' ' .$stuffData['name']);
+            console('Product ' . $stuffData['articul'] . ' found: "' . $stuffData['brand'] . ' ' .$stuffData['name'].'"');
 
             $PROP = array();
 
@@ -145,7 +145,7 @@ foreach($sites as $site) {
 
             console('Update - OK');
         } else {
-            console('New Product "'.$articul.' - ' . $stuffData['brand'] . '" ' .$stuffData['name'] . '""');
+            console('New Product "'.$stuffData['articul'].' - ' . $stuffData['brand'] . ' ' .$stuffData['name'] . '"');
 
             // Добавляем товар в каталог
             // description => DETAIL_TEXT
