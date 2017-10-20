@@ -23,6 +23,7 @@ $sites = array(
     'elica',
     'mikadzo',
     'smeg',
+    'franke',
 );
 
 $brands = array(
@@ -31,6 +32,7 @@ $brands = array(
     'Elica' => array('id' => 382, 'name' => 'Elica'),
     'Mikadzo' => array('id' => 388, 'name' => 'Mikadzo'),
     'Smeg' => array('id' => 384, 'name' => 'Smeg'),
+    'Franke' => array('id' => 379, 'name' => 'Franke'),
 );
 
 require($_SERVER["DOCUMENT_ROOT"]. "/bitrix/modules/main/include/prolog_before.php");
@@ -206,12 +208,17 @@ foreach($sites as $site) {
                 }
                 CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'addon_photo', $arFile);
 
-                // добавляем Файл документации
+                // добавляем Файлы документации
                 if (isset($stuffData['docs']) && $stuffData['docs']) {
                     $arFile = array();
                     foreach ($stuffData['docs'] as $doc) {
-                        $arFile[] = array(
-                            "VALUE" => CFile::MakeFileArray($basePath . $doc), "DESCRIPTION" => "");
+                        if (is_array($doc)) {
+                            $arFile[] = array(
+                                "VALUE" => CFile::MakeFileArray($basePath . $doc['link']), "DESCRIPTION" => $doc['description']);
+                        } else {
+                            $arFile[] = array(
+                                "VALUE" => CFile::MakeFileArray($basePath . $doc), "DESCRIPTION" => "");
+                        }
                     }
 
                     CIBlockElement::SetPropertyValueCode($PRODUCT_ID, 'doc_file', $arFile);
