@@ -22,23 +22,23 @@ $catalogUrls = array(
     array(
         'category' => 'http://www.blanco-germany.com/ru/ru/kitchen_sinks_ru/range_of_sinks_ru/overview_sinks.html',
         'baseurl'  => 'http://www.blanco-germany.com/ru/ru/kitchen_sinks_ru/range_of_sinks_ru/',
-        'path' => '/sinks.html',
+        'path' => '/blanco_sinks.html',
     ),
     array(
         'category' => 'http://www.blanco-germany.com/ru/ru/mixer_taps_ru/range_taps_ru/overview_taps.html',
         'baseurl'  => 'http://www.blanco-germany.com/ru/ru/mixer_taps_ru/range_taps_ru/',
-        'path' => '/taps.html',
+        'path' => '/blanco_taps.html',
     ),
     array(
         'category' => 'http://www.blanco-germany.com/ru/ru/accessories_ru/soap_dispensers_ru/dispenseroverview.html',
         'baseurl'  => 'http://www.blanco-germany.com/ru/ru/accessories_ru/soap_dispensers_ru/',
-        'path' => '/soap_dispensers.html',
+        'path' => '/blanco_soap_dispensers.html',
     ),
 
     array(
         'category' => 'http://www.blanco-germany.com/ru/ru/accessories_ru/waste_separation_ru/overview.html',
         'baseurl'  => 'http://www.blanco-germany.com/ru/ru/accessories_ru/waste_separation_ru/',
-        'path' => '/waste_separation.html',
+        'path' => '/blanco_waste_separation.html',
     ),
 );
 
@@ -57,7 +57,7 @@ if (file_exists($cachePath) && time() - filemtime($cachePath) < 86400) {
     $goodLinks = array();
     foreach ($catalogUrls as $catalogUrl) {
         console($colors->getColoredString('Parse category page ' . $catalogUrl['path'], "yellow"));
-        $html = file_get_html($commonPath . $catalogUrl['path']);
+        $html = file_get_html(__DIR__ . $catalogUrl['path']);
 
         $catalogHtml = $html->find('div[id=product-overview]', 0);
 
@@ -70,9 +70,13 @@ if (file_exists($cachePath) && time() - filemtime($cachePath) < 86400) {
             $link = $stuff->find('a', 0);
             $img = $stuff->find('img', 0);
 
+            if (!$name) {
+                continue;
+            }
+
             $goodLinks[] = array(
                 'name' => $name->find('p', 0)->innertext,
-                'link' => $link->attr['href'],
+                'link' => $catalogUrl['baseurl'].$link->attr['href'],
                 'image' => $img->attr['src'],
             );
         }
@@ -90,6 +94,8 @@ $listPath = __DIR__ . '/content/' . strtolower($baseStuffName) . '/' . 'list.jso
 $stuffList = array();
 foreach ($goodLinks as $key => $link) {
 
+    console($colors->getColoredString($baseUrl.$link['link'], "green"));
+
     $stuff = array(
         'name' => $link['name'],
         'articul' => '',
@@ -104,7 +110,7 @@ foreach ($goodLinks as $key => $link) {
     );
 
 
-    $html = file_get_html($baseUrl.$link['link']);
+    $html = file_get_html($link['link']);
     $isSingleArticul = false;
     $articulHtml = $html->find('div[class=color-overview]', 0);
 
@@ -117,20 +123,37 @@ foreach ($goodLinks as $key => $link) {
 
         if ($isSingleArticul) {
             $articul = trim($articulHtml->innertext);
+            console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$link['name'].' '.$link['name'].' ['. $articul . ']', "yellow"));
         } else {
             $colorImageHtml = $articulHtml->find('div[class=image]');
             $colorArticulHtml = $articulHtml->find('td[class=artNr_uk]');
 
-            foreach ($colorArticulHtml as $articulKey => $colorArticul) {
-                if (0 == $articulKey) {
-                    $articul = trim($colorArticul->innertext);
-                }
+            if (count($colorArticulHtml) == count($colorImageHtml)) {
+                foreach ($colorArticulHtml as $articulKey => $colorArticul) {
+                    if (0 == $articulKey) {
+                        $articul = trim($colorArticul->innertext);
+                        console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$link['name'].' '.$link['name'].' ['. $articul . ']', "yellow"));
+                    }
 
-                $stuff['colors'][] = array(
-                    'art' => $colorArticul->innertext,
-                    'name' => $colorImageHtml->find('img', 0)->attr['alt'],
-                    'img' => $colorImageHtml->find('img', 0)->attr['src'],
-                );
+                    $stuff['colors'][] = array(
+                        'art' => $colorArticul->innertext,
+                        'name' => $colorImageHtml[$articulKey]->find('img', 0)->attr['alt'],
+                        'img' => $colorImageHtml[$articulKey]->find('img', 0)->attr['src'],
+                    );
+                }
+            } else {
+                foreach ($colorArticulHtml as $articulKey => $colorArticul) {
+                    if (0 == $articulKey) {
+                        $articul = trim($colorArticul->innertext);
+                        console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$link['name'].' '.$link['name'].' ['. $articul . ']', "yellow"));
+                    }
+
+                    $stuff['colors'][] = array(
+                        'art' => $colorArticul->innertext,
+                        'name' => $colorImageHtml[0]->find('img', 0)->attr['alt'],
+                        'img' => $colorImageHtml[0]->find('img', 0)->attr['src'],
+                    );
+                }
             }
 
             console($colors->getColoredString(count($stuff['colors']).' colors found', "light_green"));
@@ -138,9 +161,6 @@ foreach ($goodLinks as $key => $link) {
 
         $stuff['articul'] = $articul;
         $stuffList[] = $articul;
-
-        console($colors->getColoredString($baseUrl.$link['link'], "green"));
-        console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$linkInfo['name'].' '.$link['name'].' ['. $articul . ']', "yellow"));
 
         console($colors->getColoredString('Parse images', "yellow"));
 
@@ -214,7 +234,7 @@ foreach ($goodLinks as $key => $link) {
             }
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $rawImageUrl);
+            curl_setopt($ch, CURLOPT_URL, $baseUrl.$rawImageUrl);
             curl_setopt($ch, CURLOPT_VERBOSE, false);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_AUTOREFERER, false);
@@ -241,7 +261,7 @@ foreach ($goodLinks as $key => $link) {
             }
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $rawImageUrl);
+            curl_setopt($ch, CURLOPT_URL, $baseUrl.$rawImageUrl);
             curl_setopt($ch, CURLOPT_VERBOSE, false);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_AUTOREFERER, false);
@@ -255,32 +275,6 @@ foreach ($goodLinks as $key => $link) {
         }
 
         unset($colorData);
-    }
-
-    foreach ($stuff['docs'] as $docKey => &$docUrl) {
-        console($colors->getColoredString('Download doc "'. $docUrl['link'] . '"', "yellow"));
-
-        $rawDocUrl = $docUrl['link'];
-        $docUrlParts = explode('?', $docUrl['link']);
-        $docUrl['link'] = $stuff['articul'].'__'.($docKey+1).'.pdf';
-
-        if (file_exists($path.'/'.$docUrl['link'])) {
-            continue;
-        }
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $rawDocUrl);
-        curl_setopt($ch, CURLOPT_VERBOSE, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_AUTOREFERER, false);
-        curl_setopt($ch, CURLOPT_REFERER, $baseUrl);
-        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        file_put_contents($path.'/'.$docUrl['link'], $result);
     }
 
     unset($docUrl);
