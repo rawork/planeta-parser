@@ -97,7 +97,7 @@ foreach ($goodLinks as $key => $link) {
     console($colors->getColoredString($baseUrl.$link['link'], "green"));
 
     $stuff = array(
-        'name' => $link['name'],
+        'name' => trim(str_ireplace($baseStuffName, '', $link['name'])),
         'articul' => '',
         'descriptions' => array(),
         'images' => array(),
