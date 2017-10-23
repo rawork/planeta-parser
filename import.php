@@ -33,6 +33,7 @@ $brands = array(
     'Mikadzo' => array('id' => 388, 'name' => 'Mikadzo'),
     'Smeg' => array('id' => 384, 'name' => 'Smeg'),
     'Franke' => array('id' => 379, 'name' => 'Franke'),
+//    'Blanco' => array('id' => 397, 'name' => 'Blanco'),
 );
 
 require($_SERVER["DOCUMENT_ROOT"]. "/bitrix/modules/main/include/prolog_before.php");
