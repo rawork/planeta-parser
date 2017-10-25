@@ -90,7 +90,7 @@ foreach($sites as $site) {
              */
             $arLoadProductArray = Array(
                 "MODIFIED_BY"    => 1,
-                "CODE"           => str2url($stuffData['brand'] . ' ' .$stuffData['name']),
+                "CODE"           => str2url($stuffData['brand'] . '-' .$stuffData['name'].'-'.$stuffData['articul']),
                 "PROPERTY_VALUES" => $PROP,
                 "DETAIL_TEXT"    => implode('<br><br>', $stuffData['descriptions']),
                 "DETAIL_TEXT_TYPE" => 'html',
@@ -180,7 +180,7 @@ foreach($sites as $site) {
                 "IBLOCK_ID"      => CATALOG_IBLOCK_ID,
                 "PROPERTY_VALUES"=> $PROP,
                 "NAME"           => $stuffData['brand'] . ' ' .$stuffData['name'],
-                "CODE"           => str2url($stuffData['brand'] . ' ' .$stuffData['name']), //Cutil::translit($stuffData['brand'] . ' ' .$stuffData['name'], "ru", $arTranslitParams),
+                "CODE"           => str2url($stuffData['brand'] . '-' .$stuffData['name'].'-'.$stuffData['articul']), //Cutil::translit($stuffData['brand'] . ' ' .$stuffData['name'], "ru", $arTranslitParams),
                 "ACTIVE"         => "Y",            // активен
                 "PREVIEW_TEXT"   => "",
                 "DETAIL_TEXT"    => implode('<br><br>', $stuffData['descriptions']),
