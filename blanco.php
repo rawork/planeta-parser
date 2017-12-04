@@ -132,7 +132,7 @@ foreach ($goodLinks as $key => $link) {
                 foreach ($colorArticulHtml as $articulKey => $colorArticul) {
                     if (0 == $articulKey) {
                         $articul = trim($colorArticul->innertext);
-                        console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$link['name'].' '.$link['name'].' ['. $articul . ']', "yellow"));
+                        console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$link['name'].' ['. $articul . ']', "yellow"));
                     }
 
                     $stuff['colors'][] = array(
@@ -145,7 +145,7 @@ foreach ($goodLinks as $key => $link) {
                 foreach ($colorArticulHtml as $articulKey => $colorArticul) {
                     if (0 == $articulKey) {
                         $articul = trim($colorArticul->innertext);
-                        console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$link['name'].' '.$link['name'].' ['. $articul . ']', "yellow"));
+                        console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$link['name'].' ['. $articul . ']', "yellow"));
                     }
 
                     $stuff['colors'][] = array(
