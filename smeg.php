@@ -40,7 +40,7 @@ if ($container) {
         $catLinks = array();
 
         $mainUlHtml = $container->find('ul[class=primary]', 0);
-        $li1Html = $mainUlHtml->find('li', 0);
+        $li1Html = $mainUlHtml->find('li', 1);
         $ul1Html = $li1Html->find('ul', 0);
         $catsHtml = $ul1Html->find('a');
         foreach ($catsHtml as $link) {
