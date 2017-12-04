@@ -257,9 +257,9 @@ foreach ($goodLinks as $key => $link) {
             $imageUrlParts = explode('?', $colorData['img']);
             $colorData['img'] = basename($imageUrlParts[0]);
 
-            if (file_exists($path . '/' . $colorData['img'])) {
-                continue;
-            }
+//            if (file_exists($path . '/' . $colorData['img'])) {
+//                continue;
+//            }
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $baseUrl.$rawImageUrl);
