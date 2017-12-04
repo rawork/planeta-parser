@@ -229,9 +229,9 @@ foreach ($goodLinks as $key => $link) {
             $imageUrlParts = explode('?', $imageUrl);
             $imageUrl = $key.'_'.basename($imageUrlParts[0]);
 
-            if (file_exists($path.'/'.$imageUrl)) {
-                continue;
-            }
+//            if (file_exists($path.'/'.$imageUrl)) {
+//                continue;
+//            }
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $baseUrl.$rawImageUrl);
@@ -266,6 +266,7 @@ foreach ($goodLinks as $key => $link) {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_AUTOREFERER, false);
             curl_setopt($ch, CURLOPT_REFERER, $baseUrl);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
             curl_setopt($ch, CURLOPT_HEADER, 0);
             $result = curl_exec($ch);
