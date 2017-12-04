@@ -99,7 +99,11 @@ foreach($sites as $site) {
             if (count($stuffData['colors']) > 0) {
                 $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['colors'][0]['img']);
             } elseif (count($stuffData['images']) > 0) {
-                $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['images'][0]['original']);
+                if ($stuffData['images'][0]['original'] != 'original_') {
+                    $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['images'][0]['original']);
+                } else {
+                    $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['images'][0]['thumb']);
+                }
             }
 
             if (in_array($stuffData['brand'], array('smeg'))) {
@@ -190,7 +194,11 @@ foreach($sites as $site) {
             if (count($stuffData['colors']) > 0) {
                 $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['colors'][0]['img']);
             } elseif (count($stuffData['images']) > 0) {
-                $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['images'][0]['original']);
+                if ($stuffData['images'][0]['original'] != 'original_') {
+                    $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['images'][0]['original']);
+                } else {
+                    $arLoadProductArray['DETAIL_PICTURE'] = CFile::MakeFileArray($basePath . $stuffData['images'][0]['thumb']);
+                }
             }
 
             if (isset($stuffData['section_id'])) {
