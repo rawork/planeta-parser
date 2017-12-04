@@ -75,7 +75,7 @@ if (file_exists($cachePath) && time() - filemtime($cachePath) < 86400) {
             }
 
             $goodLinks[] = array(
-                'name' => $name->find('p', 0)->innertext.' '.$name->find('p', 1)->innertext,
+                'name' => $name->find('p', 0)->innertext.($name->find('p', 1) ? ' '.$name->find('p', 1)->innertext : ''),
                 'link' => $catalogUrl['baseurl'].$link->attr['href'],
                 'image' => $img->attr['src'],
             );
