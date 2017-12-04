@@ -75,7 +75,7 @@ if (file_exists($cachePath) && time() - filemtime($cachePath) < 86400) {
             }
 
             $goodLinks[] = array(
-                'name' => $name->find('p', 0)->innertext,
+                'name' => $name->find('p', 0)->innertext.' '.$name->find('p', 1)->innertext,
                 'link' => $catalogUrl['baseurl'].$link->attr['href'],
                 'image' => $img->attr['src'],
             );
@@ -229,9 +229,9 @@ foreach ($goodLinks as $key => $link) {
             $imageUrlParts = explode('?', $imageUrl);
             $imageUrl = $key.'_'.basename($imageUrlParts[0]);
 
-//            if (file_exists($path.'/'.$imageUrl)) {
-//                continue;
-//            }
+            if (file_exists($path.'/'.$imageUrl)) {
+                continue;
+            }
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $baseUrl.$rawImageUrl);
@@ -256,10 +256,11 @@ foreach ($goodLinks as $key => $link) {
             $rawImageUrl = $colorData['img'];
             $imageUrlParts = explode('?', $colorData['img']);
             $colorData['img'] = basename($imageUrlParts[0]);
+            console($colors->getColoredString('Download color image "'. $rawImageUrl . '"', "yellow"));
 
-//            if (file_exists($path . '/' . $colorData['img'])) {
-//                continue;
-//            }
+            if (file_exists($path . '/' . $colorData['img'])) {
+                continue;
+            }
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $baseUrl.$rawImageUrl);
