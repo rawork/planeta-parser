@@ -123,7 +123,7 @@ foreach ($goodLinks as $key => $link) {
 
         if ($isSingleArticul) {
             $articul = trim($articulHtml->innertext);
-            console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$link['name'].' '.$link['name'].' ['. $articul . ']', "yellow"));
+            console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$link['name'].' ['. $articul . ']', "yellow"));
         } else {
             $colorImageHtml = $articulHtml->find('div[class=image]');
             $colorArticulHtml = $articulHtml->find('td[class=artNr_uk]');
