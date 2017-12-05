@@ -53,22 +53,35 @@ if ($container) {
             }
         }
 
-        $catalogMenu = $mainUlHtml->innertext;
-        $catalogMenuHtml = str_get_html($catalogMenu);
-        $catalogMenuHtml->find('li', 0)->outertext = '';
-        $catalogMenuHtml = str_get_html($catalogMenuHtml->innertext);
-        $li1Html = $catalogMenuHtml->find('li', 0);
+        $li1Html = $mainUlHtml->find('li', 2);
         $ul1Html = $li1Html->find('ul', 0);
         $catsHtml = $ul1Html->find('a');
         foreach ($catsHtml as $link) {
-            if ($link && substr_count($link->attr['href'], '/') == 2) {
+            if ($link && substr_count($link->attr['href'], '/') == 2 && $link->attr['href'] != '/domashnyaya-oranzhereya/') {
                 $catLinks[] = array(
                     'link' => $link->attr['href'],
                     'name' => $link->innertext,
-                    'fulltname' => true,
+                    'fulltname' => false,
                 );
             }
         }
+
+//        $catalogMenu = $mainUlHtml->innertext;
+//        $catalogMenuHtml = str_get_html($catalogMenu);
+//        $catalogMenuHtml->find('li', 0)->outertext = '';
+//        $catalogMenuHtml = str_get_html($catalogMenuHtml->innertext);
+//        $li1Html = $catalogMenuHtml->find('li', 0);
+//        $ul1Html = $li1Html->find('ul', 0);
+//        $catsHtml = $ul1Html->find('a');
+//        foreach ($catsHtml as $link) {
+//            if ($link && substr_count($link->attr['href'], '/') == 2) {
+//                $catLinks[] = array(
+//                    'link' => $link->attr['href'],
+//                    'name' => $link->innertext,
+//                    'fulltname' => true,
+//                );
+//            }
+//        }
 
         console($colors->getColoredString(count($catLinks) . ' categories found', "light_green"));
 
