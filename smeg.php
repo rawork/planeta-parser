@@ -73,7 +73,11 @@ if ($container) {
         console($colors->getColoredString(count($catLinks) . ' categories found', "light_green"));
 
         $goodLinks = array();
-        foreach ($catLinks as $catLink) {
+        $countCats = count($catLinks);
+        foreach ($catLinks as $key => $catLink) {
+
+            console($colors->getColoredString('------------------------', "green"));
+            console($colors->getColoredString('['.($key+1).'/'.$countCats.'] '.$baseUrl.$catLink['link'], "green"));
 
             $filter = array();
             $categoryPageHtml = file_get_html($baseUrl.$catLink['link']);
@@ -86,7 +90,6 @@ if ($container) {
                 }
             }
 
-            console($colors->getColoredString('------------------------', "green"));
             console($colors->getColoredString($baseUrl.$catLink['link'].'#'.http_build_query($filter), "green"));
             $stuffJson = json_decode(file_get_contents($ajaxUrl.http_build_query($filter)), true);
 
