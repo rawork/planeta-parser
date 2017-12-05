@@ -95,6 +95,7 @@ $stuffList = array();
 foreach ($goodLinks as $key => $link) {
 
     console($colors->getColoredString($baseUrl.$link['link'], "green"));
+    $articul = uniqid();
 
     $stuff = array(
         'name' => trim(str_ireplace($baseStuffName, '', $link['name'])),
@@ -123,10 +124,13 @@ foreach ($goodLinks as $key => $link) {
 
         if ($isSingleArticul) {
             $articul = trim($articulHtml->innertext);
-            console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$link['name'].' ['. $articul . ']', "yellow"));
+            console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse single articul '.$link['name'].' ['. $articul . ']', "yellow"));
         } else {
             $colorImageHtml = $articulHtml->find('div[class=image]');
             $colorArticulHtml = $articulHtml->find('td[class=artNr_uk]');
+
+            var_dump(count($colorArticulHtml));
+
             if (count($colorArticulHtml) == 0) {
                 $colorArticulHtml = $articulHtml->find('td[class=artnr]');
             }
@@ -134,8 +138,8 @@ foreach ($goodLinks as $key => $link) {
             if (count($colorArticulHtml) == count($colorImageHtml)) {
                 foreach ($colorArticulHtml as $articulKey => $colorArticul) {
                     if (0 == $articulKey) {
-                        $articul = trim($colorArticul->innertext);
-                        console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$link['name'].' ['. $articul . ']', "yellow"));
+                        $articul = trim(str_replace('артикул  ', '', $colorArticul->innertext));
+                        console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse multiple articul '.$link['name'].' ['. $articul . ']', "yellow"));
                     }
 
                     $stuff['colors'][] = array(
@@ -147,8 +151,8 @@ foreach ($goodLinks as $key => $link) {
             } else {
                 foreach ($colorArticulHtml as $articulKey => $colorArticul) {
                     if (0 == $articulKey) {
-                        $articul = trim($colorArticul->innertext);
-                        console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse '.$link['name'].' ['. $articul . ']', "yellow"));
+                        $articul = trim(str_replace('артикул  ', '', $colorArticul->innertext));
+                        console($colors->getColoredString('['.($key+1).'/'.$stuffCount.'] Start parse multiple articul '.$link['name'].' ['. $articul . ']', "yellow"));
                     }
 
                     $stuff['colors'][] = array(
