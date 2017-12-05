@@ -127,6 +127,9 @@ foreach ($goodLinks as $key => $link) {
         } else {
             $colorImageHtml = $articulHtml->find('div[class=image]');
             $colorArticulHtml = $articulHtml->find('td[class=artNr_uk]');
+            if (count($colorArticulHtml) == 0) {
+                $colorArticulHtml = $articulHtml->find('td[class=artnr]');
+            }
 
             if (count($colorArticulHtml) == count($colorImageHtml)) {
                 foreach ($colorArticulHtml as $articulKey => $colorArticul) {
