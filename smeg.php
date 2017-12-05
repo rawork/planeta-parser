@@ -40,7 +40,7 @@ if ($container) {
         $catLinks = array();
 
         $mainUlHtml = $container->find('ul[class=primary]', 0);
-        $li1Html = $mainUlHtml->find('li', 1);
+        $li1Html = $mainUlHtml->children(1);
         $ul1Html = $li1Html->find('ul', 0);
         $catsHtml = $ul1Html->find('a');
         foreach ($catsHtml as $link) {
@@ -53,11 +53,12 @@ if ($container) {
             }
         }
 
-        $li1Html = $mainUlHtml->find('li', 2);
+        $li1Html = $mainUlHtml->children(2);;
+        var_dump($li1Html->innertext);
         $ul1Html = $li1Html->find('ul', 0);
         $catsHtml = $ul1Html->find('a');
         foreach ($catsHtml as $link) {
-            if ($link && substr_count($link->attr['href'], '/') == 2 && $link->attr['href'] != '/domashnyaya-oranzhereya/') {
+            if ($link && substr_count($link->attr['href'], '/') == 2) {
                 $catLinks[] = array(
                     'link' => $link->attr['href'],
                     'name' => $link->innertext,
